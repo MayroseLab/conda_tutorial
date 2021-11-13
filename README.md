@@ -69,12 +69,12 @@ If you want to change an env after creating it, simply modify the yaml file (add
 ## Different ways to use conda
 You now know all the basics of working with conda and should be able to find your way around. Here are two common ways to work with conda - choose the one you like or make your own.
 
-### 1. One to rule them all
+### 1. "One to rule them all"
 If you have one main project in which you keep using the same packages, you only need one env including all of them. Just make one yaml file, create the env and activate it whenever you start working. You can even have it activated automatically by adding the `conda activate` command to your `.bashrc`, or just use the `base` env. You can always add or change the packages by updating the env.  
 __Pros__: easy, convenient, and you don't need to care too much about environments.  
 __Cons__: When you start to accumulate many packages in your env, the chances of clashes increase. That is, at some point conda will not be able to resolve the dependencies in a way that everything plays nicely together. However, if your env is not too crazy, this shouldn't happen.
 
-### 2. Divide and conquer
+### 2. "Divide and conquer"
 If you have several projects or fields in which you work, you might want to have multiple envs, and just activate the relevant ones when you need them. Env could be created per project, or per programming language (`python2`,`python3`,`R`), or per field (`genomics`,`phylogenetics`,`machine_learning`). If you choose to work this way, it's particularly important to keep your yaml files and env tidy.
 __Pros__: modularity, you only load relevant packages, lower chances of clashes.  
 __Cons__: High maintenance, you might need to install the same package in several envs.
@@ -89,3 +89,9 @@ export PATH=$CONDA_PREFIX/bin:$PATH
 In interactive jobs, just activate the env as usual.
 
 ## The next snake - mamba
+If you work with complex envs containing many (say 20+) packages, you might find that conda takes forever to create and update the env, or even fails miserbly. Luckily, there is another snake in town to sort that out - [mamba](https://github.com/mamba-org/mamba)!  
+You can install mamba using conda:
+```
+conda install mamba -n base -c conda-forge
+```
+Once installed, you can simply replace `conda` with `mamba` and things should work __much__ faster, e.g.: `mamba env create -f <env.yaml>`. Activate/deactivate are still done with conda.
