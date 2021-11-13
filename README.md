@@ -80,5 +80,12 @@ __Pros__: modularity, you only load relevant packages, lower chances of clashes.
 __Cons__: High maintenance, you might need to install the same package in several envs.
 
 ## Using conda on Power cluster jobs
+Our beloved Power cluster can behave a bit strange around conda envs. To avoid funky behavior, simply include the following lines in the sh file you submit:
+```
+source ~/.bashrc
+conda activate <env name>
+export PATH=$CONDA_PREFIX/bin:$PATH
+```
+In interactive jobs, just activate the env as usual.
 
 ## The next snake - mamba
