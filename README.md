@@ -61,12 +61,23 @@ Now that you have created a conda env, you can activate it with:
 conda activate <env name>
 ```
 in our example, `env name` would be `bio_data`. You should see `(bio_data)` added to the command prompt, which means it is activated. This means all installed packages are now available to you. You can always activate another env using `conda activate <other env name>`. Or you can deactivate an env with `conda deactivate`.  
-__important note__: at any time, only one env can be active! This means that if env A has package X and env B has package Y, and you do: `conda activate A` and then `conda activate B`, only package Y is available, and package X is not.
+__important note__: at any time, only one env can be active! This means that if env A has package X and env B has package Y, and you do: `conda activate A` and then `conda activate B`, only package Y is available, and package X is not. __However__, packages not related to conda are still available, which can sometimes be confusing. For example, if package X was previously installed on the machine, regardless of conda, it __will__ be available in env B, but maybe not the version you expect, so be careful!
 
 ### Updating an environment
 If you want to change an env after creating it, simply modify the yaml file (add or remove any packages or versions, but __don't__ change the name), then run: `conda env update -f <env.yaml>`. Note that this can cause other packages to be updated as well, as conda will try to fetch their latest versions.
 
 ## Different ways to use conda
+You now know all the basics of working with conda and should be able to find your way around. Here are two common ways to work with conda - choose the one you like or make your own.
+
+### 1. One to rule them all
+If you have one main project in which you keep using the same packages, you only need one env including all of them. Just make one yaml file, create the env and activate it whenever you start working. You can even have it activated automatically by adding the `conda activate` command to your `.bashrc`, or just use the `base` env. You can always add or change the packages by updating the env.  
+__Pros__: easy, convenient, and you don't need to care too much about environments.  
+__Cons__: When you start to accumulate many packages in your env, the chances of clashes increase. That is, at some point conda will not be able to resolve the dependencies in a way that everything plays nicely together. However, if your env is not too crazy, this shouldn't happen.
+
+### 2. Divide and conquer
+If you have several projects or fields in which you work, you might want to have multiple envs, and just activate the relevant ones when you need them. Env could be created per project, or per programming language (`python2`,`python3`,`R`), or per field (`genomics`,`phylogenetics`,`machine_learning`). If you choose to work this way, it's particularly important to keep your yaml files and env tidy.
+__Pros__: modularity, you only load relevant packages, lower chances of clashes.  
+__Cons__: High maintenance, you might need to install the same package in several envs.
 
 ## Using conda on Power cluster jobs
 
