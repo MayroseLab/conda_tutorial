@@ -61,7 +61,8 @@ Now that you have created a conda env, you can activate it with:
 conda activate <env name>
 ```
 in our example, `<env name>` would be `bio_data`. You should see `(bio_data)` added to the command prompt, which means it is activated. This means all installed packages are now available to you. You can always activate another env using `conda activate <other env name>`. Or you can deactivate an env with `conda deactivate`.  
-__important note__: at any time, only one env can be active! This means that if env A has package X and env B has package Y, and you do: `conda activate A` and then `conda activate B`, only package Y is available, and package X is not. __However__, packages not related to conda are still available, which can sometimes be confusing. For example, if package X was previously installed on the machine, regardless of conda, it __will__ be available in env B, but maybe not the version you expect, so be careful!
+__important note__: at any time, only one env can be active! This means that if env A has package X and env B has package Y, and you do: `conda activate A` and then `conda activate B`, only package Y is available, and package X is not. __However__, packages not related to conda are still available, which can sometimes be confusing. For example, if package X was previously installed on the machine, regardless of conda, it __will__ be available in env B, but maybe not the version you expect, so be careful!  
+You can always list the packages included in the current conda env using `conda list`.
 
 ### Updating an environment
 If you want to change an env after creating it, simply modify the yaml file (add or remove any packages or versions, but __don't__ change the name), then run: `conda env update -f <env.yaml>`. Note that this can cause other packages to be updated as well, as conda will try to fetch their latest versions.
@@ -70,7 +71,7 @@ If you want to change an env after creating it, simply modify the yaml file (add
 You now know all the basics of working with conda and should be able to find your way around. Here are two common ways to work with conda - choose the one you like or make your own.
 
 ### 1. "One to rule them all"
-If you have one main project in which you keep using the same packages, you only need one env including all of them. Just make one yaml file, create the env and activate it whenever you start working. You can even have it activated automatically by adding the `conda activate` command to your `.bashrc`, or just use the `base` env. You can always add or change the packages by updating the env.  
+If you have one main project in which you keep using the same packages, you only need one env including all of them. Just make one yaml file, create the env and activate it whenever you start working. You can even have it activated automatically by adding the `conda activate` command to your `.bashrc`, or just use the `base` env, which is available even if you don't ctivate anything. You can always add or change the packages by updating the env.  
 __Pros__: easy, convenient, and you don't need to care too much about environments.  
 __Cons__: When you start to accumulate many packages in your env, the chances of clashes increase. That is, at some point conda will not be able to resolve the dependencies in a way that everything plays nicely together. However, if your env is not too crazy, this shouldn't happen.
 
@@ -95,3 +96,8 @@ You can install mamba using conda:
 conda install mamba -n base -c conda-forge
 ```
 Once installed, you can simply replace `conda` with `mamba` and things should work __much__ faster, e.g.: `mamba env create -f <env.yaml>`. Activate/deactivate are still done with conda.
+
+## Useful links
+* [Conda cheat sheet](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf)
+* [Conda official user guide](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
+* [Using conda envs in Pycharm](https://www.jetbrains.com/help/pycharm/conda-support-creating-conda-virtual-environment.html)
