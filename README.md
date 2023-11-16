@@ -97,7 +97,79 @@ conda install mamba -n base -c conda-forge
 ```
 Once installed, you can simply replace `conda` with `mamba` and things should work __much__ faster, e.g.: `mamba env create -f <env.yaml>`. Activate/deactivate are still done with conda.
 
+## Dark side of the snake - how and when NOT to use conda
+The main purpose of conda is to allow for easy reproduction of working environments. However, it turns out that in certain cases it **does not** provide stable and reliable reproducibility, especially if environment configuration is sloppy. Here are some tips and warnings:  
+### Always set a specific software version for each package
+Here are two similar environment YAML files:  
+**env1.yml**:
+```
+name: python_analyze
+channels:
+  - conda-forge
+dependencies:
+  - python=3
+  - scipy
+```
+**env2.yml**:
+```
+name: python_analyze
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9.0
+  - numpy=1.26.0
+  - pandas=2.1.3
+  - scipy=1.11.3
+```
+These two envs will probably work similarly, however if you build `env1.yml` in a few months, you'll get a different env with the latest python and scipy versions, and whatever numpy and pandas versions set by the scipy package. This means that you may get different behavior or even runtime errors when running your code in the future. In contrast, if you use `env2.yml`, the chances for consistent behavior are much better.
+### Different conda and mamba versions behave differently
+We have seen cases where building an env from the same YAML file with different conda and mamba versions had different outcomes. Sometimes dependencies are solved differently, and sometimes a build will just fail with a specific version but complete with another. Therefore, it might be a good idea to specify the conda (and mamba) versions to use for building an env. Something like this:
+```
+# build with conda v22.9.0 and mamba v0.27.0
+name: python_analyze
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9.0
+  - numpy=1.26.0
+  - pandas=2.1.3
+  - scipy=1.11.3
+```
+### Channels order and settings may affect the outcome
+The order of channels listed in the YAML file may affect the way dependencies are resolved and may result in different environments. Moreover, default channel configurations in the `~/.condarc` file may also affect the behavior.
+### Some packages contain inherent dependency ambiguity
+Even if you follow the suggestions above, reproducibility is still not guaranteed. Why, you ask? let's look at an example:
+```
+# build with conda v22.9.0 and mamba v0.27.0
+name: kingfisher
+channels:
+  - bioconda
+  - rpetit3
+dependencies:
+  - kingfisher=0.2.2
+  - aspera-connect=3.9.6
+```
+If we look at the dependencies of kingfisher (retrieved using [conda-tree](https://github.com/conda-incubator/conda-tree)), we see:
+```
+kingfisher==0.2.2
+  ├─ aria2 1.36.0 [required: >=1.36.0]
+  ...
+  │  ├─ libssh2 1.11.0 [required: >=1.10.0,<2.0a0]
+  │  │  ├─ libgcc-ng 13.1.0 [required: >=12]
+  │  │  │  └─ dependencies of libgcc-ng displayed above
+  │  │  ├─ libzlib 1.2.13 [required: >=1.2.13,<1.3.0a0]
+  │  │  │  └─ dependencies of libzlib displayed above
+  │  │  └─ openssl 3.1.2 [required: >=3.1.1,<4.0a0]
+  │  │     ├─ ca-certificates 2023.7.22 [required: any] <--------- PROBLEM HERE
+  │  │     └─ libgcc-ng 13.1.0 [required: >=12]
+  │  │        └─ dependencies of libgcc-ng displayed above
+```
+See that `required: any` over there? This means that a dependency of a dependency  of a dependency of a dependency of package kingfisher is not accurately defined, meaning that even though our env YAML is configured well, you could get a different environment in the future. To make things worse, this inconsistency is burried rather deep, meaning it would be hard to detect.
+### Bottom line
+Conda is a great tool for quickly and easily creating personal working environments. However, it is hard (if not impossible) to guarantee reproducibility in future env builds. Therefore, conda is not recommended if you need long-term stability and reproducibility, e.g. when developing software tools and analysis pipelines that other users should use in the future. For such cases you may want to look into Docker.
+
 ## Useful links
 * [Conda cheat sheet](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf)
 * [Conda official user guide](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html)
 * [Using conda envs in Pycharm](https://www.jetbrains.com/help/pycharm/conda-support-creating-conda-virtual-environment.html)
+* [conda-tree - a usefull tool for analyzing and debugging conda envs](https://github.com/conda-incubator/conda-tree)
